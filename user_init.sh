@@ -261,6 +261,8 @@ setup_shell() {
                 if ! command -v zsh &> /dev/null; then
                     whiptail --title "Error" --msgbox "ZSH installation failed. The shell could not be found on the system." 8 60
                     return 1
+                else
+                    whiptail --title "Success" --msgbox "ZSH has been successfully installed!" 8 60
                 fi
             fi
             
@@ -316,6 +318,8 @@ setup_shell() {
                 if ! command -v fish &> /dev/null; then
                     whiptail --title "Error" --msgbox "Fish installation failed. The shell could not be found on the system." 8 60
                     return 1
+                else
+                    whiptail --title "Success" --msgbox "Fish shell has been successfully installed!" 8 60
                 fi
             fi
             
@@ -326,17 +330,12 @@ setup_shell() {
                 fi
             fi
             
-            if (whiptail --title "Oh My Fish" --yesno "Install Oh My Fish for $SELECTED_USER?" 8 60); then
-                # Install Oh My Fish
-                su - "$SELECTED_USER" -c 'curl -L https://get.oh-my.fish | fish'
-                
-                # Add ll alias to fish config
-                mkdir -p /home/$SELECTED_USER/.config/fish
-                echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.config/fish/config.fish
-                
-                # Set proper ownership
-                chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.config/fish
-            fi
+            # Add ll alias to fish config
+            mkdir -p /home/$SELECTED_USER/.config/fish
+            echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.config/fish/config.fish
+            
+            # Set proper ownership
+            chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.config/fish
             ;;
     esac
 }
