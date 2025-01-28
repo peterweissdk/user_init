@@ -5,7 +5,7 @@
 # Author: peterweissdk
 # Email: peterweissdk@gmail.com
 # Date: 2025-01-26
-# Version: v0.1.1
+# Version: v0.1.2
 # Usage: Run script with sudo, and follow menu instructions
 # ----------------------------------------------------------------------------
 
