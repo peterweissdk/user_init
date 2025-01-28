@@ -264,6 +264,8 @@ setup_shell() {
                 else
                     whiptail --title "Success" --msgbox "ZSH has been successfully installed!" 8 60
                 fi
+            else
+                whiptail --title "Info" --msgbox "ZSH is already installed on the system." 8 60
             fi
             
             if (whiptail --title "Default Shell" --yesno "Make ZSH the default shell for $SELECTED_USER?" 8 60); then
@@ -321,6 +323,8 @@ setup_shell() {
                 else
                     whiptail --title "Success" --msgbox "Fish shell has been successfully installed!" 8 60
                 fi
+            else
+                whiptail --title "Info" --msgbox "Fish shell is already installed on the system." 8 60
             fi
             
             if (whiptail --title "Default Shell" --yesno "Make Fish the default shell for $SELECTED_USER?" 8 60); then
