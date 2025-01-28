@@ -253,11 +253,22 @@ setup_shell() {
         1)
             # Install zsh if not present
             if ! command -v zsh &> /dev/null; then
-                apt-get update && apt-get install -y zsh
+                if ! apt-get update && apt-get install -y zsh; then
+                    whiptail --title "Error" --msgbox "Failed to install ZSH. Please check your internet connection and try again." 8 60
+                    return 1
+                fi
+                # Verify zsh was installed correctly
+                if ! command -v zsh &> /dev/null; then
+                    whiptail --title "Error" --msgbox "ZSH installation failed verification. Please try again." 8 60
+                    return 1
+                fi
             fi
             
             if (whiptail --title "Default Shell" --yesno "Make ZSH the default shell for $SELECTED_USER?" 8 60); then
-                chsh -s $(which zsh) "$SELECTED_USER"
+                if ! chsh -s $(which zsh) "$SELECTED_USER"; then
+                    whiptail --title "Error" --msgbox "Failed to set ZSH as default shell. Please try again." 8 60
+                    return 1
+                fi
             fi
             
             if (whiptail --title "Oh My ZSH" --yesno "Install Oh My ZSH for $SELECTED_USER?" 8 60); then
@@ -297,11 +308,22 @@ setup_shell() {
         2)
             # Install fish if not present
             if ! command -v fish &> /dev/null; then
-                apt-get update && apt-get install -y fish
+                if ! apt-get update && apt-get install -y fish; then
+                    whiptail --title "Error" --msgbox "Failed to install Fish. Please check your internet connection and try again." 8 60
+                    return 1
+                fi
+                # Verify fish was installed correctly
+                if ! command -v fish &> /dev/null; then
+                    whiptail --title "Error" --msgbox "Fish installation failed verification. Please try again." 8 60
+                    return 1
+                fi
             fi
             
             if (whiptail --title "Default Shell" --yesno "Make Fish the default shell for $SELECTED_USER?" 8 60); then
-                chsh -s $(which fish) "$SELECTED_USER"
+                if ! chsh -s $(which fish) "$SELECTED_USER"; then
+                    whiptail --title "Error" --msgbox "Failed to set Fish as default shell. Please try again." 8 60
+                    return 1
+                fi
             fi
             
             if (whiptail --title "Oh My Fish" --yesno "Install Oh My Fish for $SELECTED_USER?" 8 60); then
