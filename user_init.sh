@@ -231,58 +231,92 @@ delete_user() {
     fi
 }
 
-# Function to setup ZSH
-setup_zsh() {
+# Function to setup Shell
+setup_shell() {
     USERS=$(awk -F: '$3 >= 1000 && $3 != 65534 {print $1}' /etc/passwd)
     USER_ARRAY=()
     for user in $USERS; do
         USER_ARRAY+=("$user" "")
     done
     
-    SELECTED_USER=$(whiptail --title "Select User" --menu "Choose user to setup ZSH:" 15 60 4 "${USER_ARRAY[@]}" 3>&1 1>&2 2>&3)
+    SELECTED_USER=$(whiptail --title "Select User" --menu "Choose user to setup Shell:" 15 60 4 "${USER_ARRAY[@]}" 3>&1 1>&2 2>&3)
     if [ $? -ne 0 ]; then return; fi
-    
-    # Install zsh if not present
-    if ! command -v zsh &> /dev/null; then
-        apt-get update && apt-get install -y zsh
-    fi
-    
-    if (whiptail --title "Default Shell" --yesno "Make ZSH the default shell for $SELECTED_USER?" 8 60); then
-        chsh -s $(which zsh) "$SELECTED_USER"
-    fi
-    
-    if (whiptail --title "Oh My ZSH" --yesno "Install Oh My ZSH for $SELECTED_USER?" 8 60); then
-        # Install Oh My ZSH
-        su - "$SELECTED_USER" -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
-        
-        # Add ll alias
-        echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.zshrc
-        
-        # Theme selection
-        THEME=$(whiptail --title "Select Theme" --menu "Choose a theme:" 20 60 12 \
-            "ys" "Ys Theme" \
-            "eastwood" "Eastwood Theme" \
-            "simple" "Simple Theme" \
-            "lukerandall" "Lukerandall Theme" \
-            "gozilla" "Gozilla Theme" \
-            "kphoen" "Kphoen Theme" \
-            "jonathan" "Jonathan Theme" \
-            "minimal" "Minimal Theme" \
-            "apple" "Apple Theme" \
-            "gnzh" "Gnzh Theme" \
-            "nanotech" "Nanotech Theme" \
-            "agnoster" "Agnoster Theme" \
-            "miloshadzic" "Miloshadzic Theme" 3>&1 1>&2 2>&3)
+
+    # Let user choose between ZSH and Fish
+    SHELL_CHOICE=$(whiptail --title "Shell Selection" --menu "Choose which shell to install:" 15 60 2 \
+        "1" "Install ZSH Shell" \
+        "2" "Install Fish Shell" \
+        3>&1 1>&2 2>&3)
+    if [ $? -ne 0 ]; then return; fi
+
+    case $SHELL_CHOICE in
+        1)
+            # Install zsh if not present
+            if ! command -v zsh &> /dev/null; then
+                apt-get update && apt-get install -y zsh
+            fi
             
-        if [ $? -eq 0 ]; then
-            sed -i "s/ZSH_THEME=.*/ZSH_THEME=\"$THEME\"/" /home/$SELECTED_USER/.zshrc
-            whiptail --title "Theme Installed" --msgbox "Theme '$THEME' has been set as your ZSH theme.\nIt will be active next time you log in." 10 50
-        fi
-    fi
-    
-    # Set proper ownership
-    chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.zshrc
-    chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.oh-my-zsh 2>/dev/null
+            if (whiptail --title "Default Shell" --yesno "Make ZSH the default shell for $SELECTED_USER?" 8 60); then
+                chsh -s $(which zsh) "$SELECTED_USER"
+            fi
+            
+            if (whiptail --title "Oh My ZSH" --yesno "Install Oh My ZSH for $SELECTED_USER?" 8 60); then
+                # Install Oh My ZSH
+                su - "$SELECTED_USER" -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+                
+                # Add ll alias
+                echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.zshrc
+                
+                # Theme selection
+                THEME=$(whiptail --title "Select Theme" --menu "Choose a theme:" 20 60 12 \
+                    "ys" "Ys Theme" \
+                    "eastwood" "Eastwood Theme" \
+                    "simple" "Simple Theme" \
+                    "lukerandall" "Lukerandall Theme" \
+                    "gozilla" "Gozilla Theme" \
+                    "kphoen" "Kphoen Theme" \
+                    "jonathan" "Jonathan Theme" \
+                    "minimal" "Minimal Theme" \
+                    "apple" "Apple Theme" \
+                    "gnzh" "Gnzh Theme" \
+                    "nanotech" "Nanotech Theme" \
+                    "agnoster" "Agnoster Theme" \
+                    "miloshadzic" "Miloshadzic Theme" 3>&1 1>&2 2>&3)
+                    
+                if [ $? -eq 0 ]; then
+                    sed -i "s/ZSH_THEME=.*/ZSH_THEME=\"$THEME\"/" /home/$SELECTED_USER/.zshrc
+                    whiptail --title "Theme Installed" --msgbox "Theme '$THEME' has been set as your ZSH theme.\nIt will be active next time you log in." 10 50
+                fi
+                
+                # Set proper ownership
+                chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.zshrc
+                chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.oh-my-zsh 2>/dev/null
+            fi
+            ;;
+            
+        2)
+            # Install fish if not present
+            if ! command -v fish &> /dev/null; then
+                apt-get update && apt-get install -y fish
+            fi
+            
+            if (whiptail --title "Default Shell" --yesno "Make Fish the default shell for $SELECTED_USER?" 8 60); then
+                chsh -s $(which fish) "$SELECTED_USER"
+            fi
+            
+            if (whiptail --title "Oh My Fish" --yesno "Install Oh My Fish for $SELECTED_USER?" 8 60); then
+                # Install Oh My Fish
+                su - "$SELECTED_USER" -c 'curl -L https://get.oh-my.fish | fish'
+                
+                # Add ll alias to fish config
+                mkdir -p /home/$SELECTED_USER/.config/fish
+                echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.config/fish/config.fish
+                
+                # Set proper ownership
+                chown -R $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.config/fish
+            fi
+            ;;
+    esac
 }
 
 # Function to setup SSH key
@@ -319,7 +353,7 @@ while true; do
         "1" "Setup User" \
         "2" "Setup Sudo User" \
         "3" "Delete User" \
-        "4" "Setup ZSH Shell" \
+        "4" "Setup User Shell" \
         "5" "Setup SSH Key" \
         3>&1 1>&2 2>&3)
     
@@ -340,7 +374,7 @@ while true; do
             delete_user
             ;;
         4)
-            setup_zsh
+            setup_shell
             ;;
         5)
             setup_ssh_key
