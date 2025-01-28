@@ -254,7 +254,7 @@ setup_shell() {
             # Install zsh if not present
             if ! command -v zsh &> /dev/null; then
                 # Attempt to install ZSH
-                if ! apt-get update && apt-get install -y zsh; then
+                if ! (apt-get update && apt-get install -y zsh); then
                     whiptail --title "Warning" --msgbox "There were errors during ZSH installation. Checking if it installed anyway..." 8 60
                 fi
                 # Check if ZSH is now available, regardless of installation exit status
@@ -309,7 +309,7 @@ setup_shell() {
             # Install fish if not present
             if ! command -v fish &> /dev/null; then
                 # Attempt to install Fish
-                if ! apt-get update && apt-get install fish -y; then
+                if ! (apt-get update && apt-get install -y fish); then
                     whiptail --title "Warning" --msgbox "There were errors during Fish installation. Checking if it installed anyway..." 8 60
                 fi
                 # Check if Fish is now available, regardless of installation exit status
