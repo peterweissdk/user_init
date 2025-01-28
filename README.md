@@ -42,9 +42,9 @@ A user-friendly interactive tool for Linux debian user management, shell configu
 ```bash
 user_init/
 ├── .git
+├── user_init.sh
 ├── License
-├── README.md
-└── user_init.sh
+└── README.md 
 ```
 
 ## 🤝 Contributing
