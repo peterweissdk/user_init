@@ -32,7 +32,6 @@ A user-friendly interactive tool for Linux debian user management, shell configu
    ./user_init.sh --install
    ```
 ### Usage Options
-- `-c, --create`: Create a new script
 - `-i, --install`: Install the script system-wide
 - `-u, --update-version`: Update the script version
 - `-v, --version`: Display current version
