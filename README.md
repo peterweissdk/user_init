@@ -2,6 +2,7 @@
 
 [![Static Badge](https://img.shields.io/badge/Linux-Debian-white?style=flat&logo=linux&logoColor=white&logoSize=auto&labelColor=black)](https://www.linux.org/)
 [![Static Badge](https://img.shields.io/badge/Bash-script-white?style=flat&logo=gnubash&logoColor=white&logoSize=auto&labelColor=black)](https://www.gnu.org/software/bash/)
+[![Static Badge](https://img.shields.io/badge/GPL-V3-white?style=flat&logo=gnu&logoColor=white&logoSize=auto&labelColor=black)](https://www.gnu.org/licenses/gpl-3.0.en.html/)
 
 A user-friendly interactive tool for Linux Debian user management, shell configuration (ZSH/Fish), and SSH key connectivity. Built with Bash and Whiptail for a seamless command-line experience.
 
