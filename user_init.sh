@@ -274,13 +274,14 @@ setup_shell() {
                     return 1
                 fi
             fi
+
+            # Add ll alias
+            echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.zshrc
+            chown $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.zshrc
             
             if (whiptail --title "Oh My ZSH" --yesno "Install Oh My ZSH for $SELECTED_USER?" 8 60); then
                 # Install Oh My ZSH
                 su - "$SELECTED_USER" -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
-                
-                # Add ll alias
-                echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.zshrc
                 
                 # Theme selection
                 THEME=$(whiptail --title "Select Theme" --menu "Choose a theme:" 20 60 12 \
