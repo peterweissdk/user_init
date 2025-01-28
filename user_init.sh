@@ -253,13 +253,13 @@ setup_shell() {
         1)
             # Install zsh if not present
             if ! command -v zsh &> /dev/null; then
+                # Attempt to install ZSH
                 if ! apt-get update && apt-get install -y zsh; then
-                    whiptail --title "Error" --msgbox "Failed to install ZSH. Please check your internet connection and try again." 8 60
-                    return 1
+                    whiptail --title "Warning" --msgbox "There were errors during ZSH installation. Checking if it installed anyway..." 8 60
                 fi
-                # Verify zsh was installed correctly
+                # Check if ZSH is now available, regardless of installation exit status
                 if ! command -v zsh &> /dev/null; then
-                    whiptail --title "Error" --msgbox "ZSH installation failed verification. Please try again." 8 60
+                    whiptail --title "Error" --msgbox "ZSH installation failed. The shell could not be found on the system." 8 60
                     return 1
                 fi
             fi
@@ -308,13 +308,13 @@ setup_shell() {
         2)
             # Install fish if not present
             if ! command -v fish &> /dev/null; then
+                # Attempt to install Fish
                 if ! apt-get update && apt-get install -y fish; then
-                    whiptail --title "Error" --msgbox "Failed to install Fish. Please check your internet connection and try again." 8 60
-                    return 1
+                    whiptail --title "Warning" --msgbox "There were errors during Fish installation. Checking if it installed anyway..." 8 60
                 fi
-                # Verify fish was installed correctly
+                # Check if Fish is now available, regardless of installation exit status
                 if ! command -v fish &> /dev/null; then
-                    whiptail --title "Error" --msgbox "Fish installation failed verification. Please try again." 8 60
+                    whiptail --title "Error" --msgbox "Fish installation failed. The shell could not be found on the system." 8 60
                     return 1
                 fi
             fi
