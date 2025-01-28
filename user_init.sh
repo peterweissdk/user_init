@@ -375,7 +375,7 @@ setup_ssh_key() {
 
 # Main menu loop
 while true; do
-    CHOICE=$(whiptail --title "User Management" --cancel-button "Exit" --menu "Choose an option:" 18 60 5 \
+    CHOICE=$(whiptail --title "User initialization" --cancel-button "Exit" --menu "Choose an option:" 18 60 5 \
         "1" "Setup User" \
         "2" "Setup Sudo User" \
         "3" "Delete User" \
