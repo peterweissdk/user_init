@@ -276,6 +276,12 @@ setup_shell() {
             fi
 
             if (whiptail --title "Oh My ZSH" --yesno "Install Oh My ZSH for $SELECTED_USER?" 8 60); then
+                # Check if curl is installed
+                if ! command -v curl &> /dev/null; then
+                    whiptail --title "Error" --msgbox "Oh My ZSH installation failed! Curl is not installed. Please install curl first." 8 60
+                    return 1
+                fi
+
                 # Install Oh My ZSH
                 su - "$SELECTED_USER" -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
                 
