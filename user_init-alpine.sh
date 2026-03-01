@@ -118,6 +118,13 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Check if dialog is installed
+if ! command -v dialog >/dev/null 2>&1; then
+    echo "Error: 'dialog' is not installed."
+    echo "Install it with: apk add dialog"
+    exit 1
+fi
+
 # Function to setup a new user
 setup_user() {
     USERNAME=$(dialog --inputbox "Enter username" 8 40 3>&1 1>&2 2>&3)
