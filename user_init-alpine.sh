@@ -331,7 +331,9 @@ setup_shell() {
                 # Install Oh My ZSH
                 su - "$SELECTED_USER" -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
                 
-                # Add ll alias after Oh My Zsh installation
+                # Add TERM and ll alias after Oh My Zsh installation
+                # Insert TERM export at the beginning of .zshrc for proper color support
+                sed -i '1i export TERM="xterm-256color"' /home/$SELECTED_USER/.zshrc
                 echo 'alias ll="ls -la"' >> /home/$SELECTED_USER/.zshrc
                 chown $SELECTED_USER:$SELECTED_USER /home/$SELECTED_USER/.zshrc
                 
