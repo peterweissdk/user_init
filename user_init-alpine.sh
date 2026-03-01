@@ -201,9 +201,47 @@ setup_sudo_user() {
         return
     fi
     
+    # Check if sudo or doas is installed, offer to install if not
+    if ! command -v sudo >/dev/null 2>&1 && ! command -v doas >/dev/null 2>&1; then
+        dialog --title "No sudo/doas" --yesno "Neither sudo nor doas is installed.\nInstall sudo now?" 8 50
+        if [ $? -eq 0 ]; then
+            apk add sudo
+            if ! command -v sudo >/dev/null 2>&1; then
+                dialog --title "Error" --msgbox "Failed to install sudo" 8 40
+                return
+            fi
+        else
+            dialog --title "Cancelled" --msgbox "Cannot grant sudo access without sudo or doas installed" 8 50
+            return
+        fi
+    fi
+    
+    # Configure sudo for wheel group if sudo is installed
+    if command -v sudo >/dev/null 2>&1; then
+        # Uncomment wheel group line in sudoers if commented
+        if [ -f /etc/sudoers ]; then
+            # Check if wheel is already enabled
+            if ! grep -q "^%wheel" /etc/sudoers; then
+                # Uncomment the wheel line or add it
+                if grep -q "^# %wheel" /etc/sudoers; then
+                    sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+                else
+                    echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
+                fi
+            fi
+        fi
+    fi
+    
+    # Configure doas for wheel group if doas is installed
+    if command -v doas >/dev/null 2>&1; then
+        if [ ! -f /etc/doas.conf ] || ! grep -q "permit.*:wheel" /etc/doas.conf; then
+            echo "permit persist :wheel" >> /etc/doas.conf
+        fi
+    fi
+    
     adduser "$SELECTED_USER" wheel
     if [ $? -eq 0 ]; then
-        dialog --title "Success" --msgbox "Added $SELECTED_USER to wheel group" 8 40
+        dialog --title "Success" --msgbox "Added $SELECTED_USER to wheel group.\nSudo/doas access is now configured." 8 50
     else
         dialog --title "Error" --msgbox "Failed to add $SELECTED_USER to wheel group" 8 40
     fi
