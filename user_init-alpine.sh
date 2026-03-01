@@ -311,7 +311,10 @@ setup_shell() {
                 if ! grep -q "^$ZSH_PATH$" /etc/shells; then
                     echo "$ZSH_PATH" >> /etc/shells
                 fi
-                if ! chsh -s "$ZSH_PATH" "$SELECTED_USER"; then
+                # Use sed to modify /etc/passwd directly (BusyBox chsh compatibility)
+                if sed -i "s|^\($SELECTED_USER:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:\).*|\1$ZSH_PATH|" /etc/passwd; then
+                    dialog --title "Success" --msgbox "ZSH set as default shell for $SELECTED_USER" 8 60
+                else
                     dialog --title "Error" --msgbox "Failed to set ZSH as default shell. Please try again." 8 60
                     return 1
                 fi
@@ -384,7 +387,10 @@ setup_shell() {
                 if ! grep -q "^$FISH_PATH$" /etc/shells; then
                     echo "$FISH_PATH" >> /etc/shells
                 fi
-                if ! chsh -s "$FISH_PATH" "$SELECTED_USER"; then
+                # Use sed to modify /etc/passwd directly (BusyBox chsh compatibility)
+                if sed -i "s|^\($SELECTED_USER:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:\).*|\1$FISH_PATH|" /etc/passwd; then
+                    dialog --title "Success" --msgbox "Fish set as default shell for $SELECTED_USER" 8 60
+                else
                     dialog --title "Error" --msgbox "Failed to set Fish as default shell. Please try again." 8 60
                     return 1
                 fi
