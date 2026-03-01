@@ -121,8 +121,22 @@ fi
 # Check if dialog is installed
 if ! command -v dialog >/dev/null 2>&1; then
     echo "Error: 'dialog' is not installed."
-    echo "Install it with: apk add dialog"
-    exit 1
+    printf "Do you want to install it now? (yes/no): "
+    read answer
+    case $answer in
+        [Yy]* )
+            apk add dialog
+            if ! command -v dialog >/dev/null 2>&1; then
+                echo "Failed to install dialog. Exiting."
+                exit 1
+            fi
+            echo "dialog installed successfully."
+            ;;
+        * )
+            echo "Exiting script."
+            exit 0
+            ;;
+    esac
 fi
 
 # Function to setup a new user
