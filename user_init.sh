@@ -5,11 +5,11 @@
 # Author: peterweissdk
 # Email: peterweissdk@gmail.com
 # Date: 2025-01-26
-# Version: v0.1.2
+# Version: v0.2.0
 # Usage: Run script with sudo, and follow menu instructions
 # ----------------------------------------------------------------------------
 
-VERSION="0.1.2"
+VERSION="0.2.0"
 SCRIPT_NAME="user_init"
 SCRIPT_URL="https://raw.githubusercontent.com/peterweissdk/user_init/main/user_init.sh"
 VERSION_URL="https://raw.githubusercontent.com/peterweissdk/user_init/main/user_init.sh"
