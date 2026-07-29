@@ -9,107 +9,124 @@
 # Usage: Run script with sudo, and follow menu instructions
 # ----------------------------------------------------------------------------
 
-# Installs script
-install() {
-    printf "Do you want to install this script? (yes/no): "
-    read answer
-    case $answer in
-        [Yy]* )
-            # Set default installation path
-            default_path="/usr/local/bin"
-            
-            # Prompt for installation path
-            printf "Enter the installation path [$default_path]: "
-            read install_path
-            install_path=${install_path:-$default_path}  # Use default if no input
+VERSION="0.1.2"
+SCRIPT_NAME="user_init"
+SCRIPT_URL="https://raw.githubusercontent.com/peterweissdk/user_init/main/user_init-alpine.sh"
+VERSION_URL="https://raw.githubusercontent.com/peterweissdk/user_init/main/user_init-alpine.sh"
 
-            # Get the filename of the script
-            script_name=$(basename "$0")
+# Function to display help
+show_help() {
+    echo "Usage: $SCRIPT_NAME [OPTIONS]"
+    echo ""
+    echo "Ncurses user management tool for Alpine Linux"
+    echo ""
+    echo "Options:"
+    echo "  -v, --version    Show version information"
+    echo "  -u, --update     Update script to latest version"
+    echo "  -h, --help       Show this help message"
+    echo ""
+    echo "Run without options to start the interactive menu."
+    echo "Note: This script requires root privileges."
+}
 
-            # Copy the script to the specified path
-            echo "Copying $script_name to $install_path..."
-            
-            # Check if the user has write permissions
-            if [ ! -w "$install_path" ]; then
-                echo "You need root privileges to install the script in $install_path."
-                if sudo cp "$0" "$install_path/$script_name"; then
-                    sudo chmod +x "$install_path/$script_name"
-                    echo "Script installed successfully."
-                else
-                    echo "Failed to install script."
-                    exit 1
-                fi
-            else
-                if cp "$0" "$install_path/$script_name"; then
-                    chmod +x "$install_path/$script_name"
-                    echo "Script installed successfully."
-                else
-                    echo "Failed to install script."
-                    exit 1
-                fi
-            fi
-            ;;
-        [Nn]* )
-            echo "Exiting script."
+# Function to display version
+show_version() {
+    echo "$SCRIPT_NAME version $VERSION"
+}
+
+# Function to compare versions (returns 0 if $1 > $2)
+# POSIX-compatible version comparison
+version_gt() {
+    # Returns 0 (true) if $1 > $2
+    test "$(printf '%s\n' "$1" "$2" | sort -t. -k1,1n -k2,2n -k3,3n | head -n1)" != "$1"
+}
+
+# Function to update script
+update_script() {
+    echo "Checking for updates..."
+    
+    # Check if curl is available
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "⛔ curl is required for updates. Install with: apk add curl"
+        exit 1
+    fi
+    
+    # Get remote version
+    remote_script=$(curl -fsSL "$VERSION_URL" 2>/dev/null)
+    if [ $? -ne 0 ]; then
+        echo "⛔ Failed to check for updates"
+        exit 1
+    fi
+    
+    remote_version=$(echo "$remote_script" | grep -m1 '^VERSION=' | cut -d'"' -f2)
+    
+    if [ -z "$remote_version" ]; then
+        echo "⛔ Failed to determine remote version"
+        exit 1
+    fi
+    
+    echo "Current version: $VERSION"
+    echo "Latest version:  $remote_version"
+    
+    if version_gt "$remote_version" "$VERSION"; then
+        echo "📥 Updating to version $remote_version..."
+        
+        # Get the path of the current script
+        script_path=$(readlink -f "$0")
+        
+        # Create temp file
+        tmp_file=$(mktemp)
+        trap "rm -f $tmp_file" EXIT
+        
+        # Download new version
+        if ! curl -fsSL "$SCRIPT_URL" -o "$tmp_file"; then
+            echo "⛔ Failed to download update"
+            exit 1
+        fi
+        
+        # Install updated script
+        if [ -w "$script_path" ]; then
+            cp "$tmp_file" "$script_path" && chmod 755 "$script_path"
+        elif sudo -n true 2>/dev/null; then
+            sudo cp "$tmp_file" "$script_path" && sudo chmod 755 "$script_path"
+        else
+            echo "You need root privileges to update the script."
+            sudo cp "$tmp_file" "$script_path" && sudo chmod 755 "$script_path"
+        fi
+        
+        if [ $? -eq 0 ]; then
+            echo "✅ Successfully updated to version $remote_version"
+        else
+            echo "⛔ Failed to install update"
+            exit 1
+        fi
+    else
+        echo "✅ Already running the latest version"
+    fi
+}
+
+# Parse command line arguments
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -v|--version)
+            show_version
             exit 0
             ;;
-        * )
-            echo "Please answer yes or no."
-            install
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -u|--update)
+            update_script
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use -h or --help for usage information"
+            exit 1
             ;;
     esac
-
-    exit 0
-}
-
-# Updates version of script
-update_version() {
-    # Extract the current version from the script header
-    version_line=$(grep "^# Version:" "$0")
-    current_version=${version_line#*: }  # Remove everything up to and including ": "
-    
-    echo "Current version: $current_version"
-    
-    # Prompt the user for a new version
-    printf "Enter new version (current: $current_version): "
-    read new_version
-    
-    # Update the version in the script
-    sed -i "s/^# Version: .*/# Version: $new_version/" "$0"
-    
-    echo "Version updated to: $new_version"
-
-    exit 0
-}
-
-# Prints out version
-version() {
-    # Extract the current version from the script header
-    version_line=$(grep "^# Version:" "$0")
-    current_version=${version_line#*: }  # Remove everything up to and including ": "
-    
-    echo "$0: $current_version"
-
-    exit 0
-}
-
-# Prints out help
-help() {
-    echo "Run script to setup a new shell script file."
-    echo "Usage: $0 [-i | --install] [-u | --update-version] [-v | --version] [-h | --help]"
-
-    exit 0
-}
-
-# Check for flags
-while [ "$#" -gt 0 ]; do
-    case $1 in
-        -i|--install) install; shift ;;
-        -u|--update-version) update_version; shift ;;
-        -v|--version) version; shift ;;
-        -h|--help) help; shift ;;
-        *) echo "Unknown option: $1"; help; exit 1 ;;
-    esac
+    shift
 done
 
 # Check if script is run as root
