@@ -14,6 +14,14 @@ A user-friendly interactive tool for Linux Debian and Alpine Linux user manageme
 - Installation option for system-wide availability
 
 ## 🚀 Quick Start
+
+### One-Line Install
+```bash
+curl -fsSL https://raw.githubusercontent.com/peterweissdk/user_init/main/install.sh | bash
+```
+The installer will prompt you to choose between **Debian/Ubuntu** or **Alpine Linux** version.
+
+### Manual Installation
 1. Clone this repository:
    ```bash
    git clone https://github.com/peterweissdk/user_init.git
@@ -21,30 +29,29 @@ A user-friendly interactive tool for Linux Debian and Alpine Linux user manageme
 
 2. Make the script executable:
    ```bash
-   chmod +x user_init.sh
+   chmod +x user_init.sh        # For Debian/Ubuntu
+   chmod +x user_init-alpine.sh  # For Alpine Linux
    ```
 
 3. Run the script:
    ```bash
-   ./user_init.sh
+   sudo ./user_init.sh           # For Debian/Ubuntu
+   sudo ./user_init-alpine.sh    # For Alpine Linux
    ```
 
-4. Optional: Install the script system-wide:
-   ```bash
-   ./user_init.sh --install
-   ```
 ### Usage Options
-- `-i, --install`: Install the script system-wide
-- `-u, --update-version`: Update the script version
 - `-v, --version`: Display current version
+- `-u, --update`: Update script to latest version from GitHub
 - `-h, --help`: Show help message
 
 ## 📝 Directory Structure
 ```bash
 user_init/
 ├── .git
+├── install.sh
 ├── user_init.sh
-├── License
+├── user_init-alpine.sh
+├── LICENSE
 └── README.md 
 ```
 
