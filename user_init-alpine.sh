@@ -498,7 +498,7 @@ setup_ssh_key() {
 
 # Main menu loop
 while true; do
-    CHOICE=$(dialog --title "User initialization" --cancel-label "Exit" --menu "Choose an option:" 18 60 5 \
+    CHOICE=$(dialog --title "User initialization v${VERSION}" --cancel-label "Exit" --menu "Choose an option:" 18 60 5 \
         "1" "Setup User" \
         "2" "Setup Sudo User" \
         "3" "Delete User" \
